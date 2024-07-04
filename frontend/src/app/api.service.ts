@@ -49,8 +49,8 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}/produtos`, produto);
   }
 
-  updateProduto(id: number, produto: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/produtos/${id}`, produto);
+  updateProduto(id: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/produtos/${id}`, formData);
   }
 
   deleteProduto(id: number): Observable<any> {

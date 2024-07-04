@@ -47,21 +47,16 @@ class ProdutoController extends Controller
 
     public function update(Request $request, $id)
     {
-        Log::info('Dados recebidos para atualização:', $request->all());
-
         $validatedData = $request->validate([
-            'descricao' => 'required|string|max:255',
-            'valor_venda' => 'required|numeric',
-            'estoque' => 'required|integer',
+            'descricao' => 'string|max:255',
+            'valor_venda' => 'numeric',
+            'estoque' => 'integer',
             'imagens' => 'nullable|array',
             'imagens.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         $produto = Produto::findOrFail($id);
-        Log::info('Produto encontrado:', $produto->toArray());
-
         $produto->update($validatedData);
-        Log::info('Produto atualizado:', $produto->toArray());
 
         if ($request->has('imagens')) {
             foreach ($produto->imagens as $imagem) {
@@ -77,6 +72,7 @@ class ProdutoController extends Controller
 
         return response()->json($produto, 200);
     }
+
 
 
 
