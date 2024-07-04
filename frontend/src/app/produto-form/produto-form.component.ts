@@ -52,6 +52,12 @@ export class ProdutoFormComponent implements OnInit {
       }
     }
 
+    console.log('Dados do formulário antes do envio:', {
+      descricao: this.produtoForm.get('descricao')!.value,
+      valor_venda: this.produtoForm.get('valor_venda')!.value,
+      estoque: this.produtoForm.get('estoque')!.value
+    });
+
     if (this.isEdit) {
       this.apiService.updateProduto(this.produto.id, formData).subscribe(
         (response) => {

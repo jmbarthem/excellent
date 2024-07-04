@@ -47,6 +47,8 @@ class ProdutoController extends Controller
 
     public function update(Request $request, $id)
     {
+        Log::info('Dados recebidos para atualização:', $request->all());
+
         $validatedData = $request->validate([
             'descricao' => 'string|max:255',
             'valor_venda' => 'numeric',
@@ -72,6 +74,7 @@ class ProdutoController extends Controller
 
         return response()->json($produto, 200);
     }
+
 
 
 
