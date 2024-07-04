@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -49,9 +49,16 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}/produtos`, produto);
   }
 
-  updateProduto(id: number, formData: FormData): Observable<any> {
-    return this.http.put(`${this.apiUrl}/produtos/${id}`, formData);
-  }
+  updateProduto(id: number, produto: any): Observable<any> {
+    const params = new HttpParams()
+        .set('descricao', produto.descricao)
+        .set('valor_venda', produto.valor_venda)
+        .set('estoque', produto.estoque);
+
+    return this.http.put(`${this.apiUrl}/produtos/${id}`, params.toString(), {
+        headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+    });
+}
 
   deleteProduto(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/produtos/${id}`);

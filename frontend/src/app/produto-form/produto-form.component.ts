@@ -37,46 +37,41 @@ export class ProdutoFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.produtoForm.invalid) {
-      return;
+        return;
     }
 
-    const formData = new FormData();
-    formData.append('descricao', this.produtoForm.get('descricao')!.value);
-    formData.append('valor_venda', this.produtoForm.get('valor_venda')!.value);
-    formData.append('estoque', this.produtoForm.get('estoque')!.value);
+    const produtoData = {
+        descricao: this.produtoForm.get('descricao')!.value,
+        valor_venda: this.produtoForm.get('valor_venda')!.value,
+        estoque: this.produtoForm.get('estoque')!.value
+    };
 
-    const imagens = this.produtoForm.get('imagens')!.value;
-    if (imagens) {
-      for (let i = 0; i < imagens.length; i++) {
-        formData.append('imagens[]', imagens[i]);
-      }
-    }
-
-    console.log('Dados do formulário antes do envio:', formData);
+    console.log('Dados do formulário antes do envio:', produtoData);
 
     if (this.isEdit) {
-      this.apiService.updateProduto(this.produto.id, formData).subscribe(
-        (response) => {
-          console.log('Produto atualizado com sucesso', response);
-          this.modal.close('save');
-        },
-        (error) => {
-          console.error('Erro ao atualizar produto', error);
-        }
-      );
+        this.apiService.updateProduto(this.produto.id, produtoData).subscribe(
+            (response) => {
+                console.log('Produto atualizado com sucesso', response);
+                this.modal.close('save');
+            },
+            (error) => {
+                console.error('Erro ao atualizar produto', error);
+            }
+        );
     } else {
-      this.apiService.addProduto(formData).subscribe(
-        (response) => {
-          console.log('Produto salvo com sucesso', response);
-          this.modal.close('save');
-        },
-        (error) => {
-          console.error('Erro ao salvar produto', error);
-          this.produtoForm.reset();
-        }
-      );
+        this.apiService.addProduto(produtoData).subscribe(
+            (response) => {
+                console.log('Produto salvo com sucesso', response);
+                this.modal.close('save');
+            },
+            (error) => {
+                console.error('Erro ao salvar produto', error);
+                this.produtoForm.reset();
+            }
+        );
     }
-  }
+}
+
 
   closeModal() {
     this.modal.dismiss();

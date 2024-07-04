@@ -50,15 +50,18 @@ class ProdutoController extends Controller
         Log::info('Dados recebidos para atualização:', $request->all());
 
         $validatedData = $request->validate([
-            'descricao' => 'string|max:255',
-            'valor_venda' => 'numeric',
-            'estoque' => 'integer',
+            'descricao' => 'required|string|max:255',
+            'valor_venda' => 'required|numeric',
+            'estoque' => 'required|integer',
             'imagens' => 'nullable|array',
             'imagens.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         $produto = Produto::findOrFail($id);
-        $produto->update($validatedData);
+        $produto->descricao = $request->input('descricao');
+        $produto->valor_venda = $request->input('valor_venda');
+        $produto->estoque = $request->input('estoque');
+        $produto->save();
 
         if ($request->has('imagens')) {
             foreach ($produto->imagens as $imagem) {
@@ -74,6 +77,9 @@ class ProdutoController extends Controller
 
         return response()->json($produto, 200);
     }
+
+
+
 
 
 
