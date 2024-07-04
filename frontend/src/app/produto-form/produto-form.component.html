@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ isEdit ? 'Editar Produto' : 'Adicionar Produto' }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="produtoForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="descricao" class="form-label">Descrição</label>
+      <input id="descricao" type="text" class="form-control" formControlName="descricao">
+    </div>
+    <div class="mb-3">
+      <label for="valor_venda" class="form-label">Valor de Venda</label>
+      <input id="valor_venda" type="number" class="form-control" formControlName="valor_venda">
+    </div>
+    <div class="mb-3">
+      <label for="estoque" class="form-label">Estoque</label>
+      <input id="estoque" type="number" class="form-control" formControlName="estoque">
+    </div>
+    <div class="mb-3">
+      <label for="imagens" class="form-label">Imagens</label>
+      <input id="imagens" type="file" class="form-control" (change)="onFileChange($event)" multiple>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+      <button type="submit" class="btn btn-primary">{{ isEdit ? 'Atualizar' : 'Adicionar' }}</button>
+    </div>
+  </form>
+</div>

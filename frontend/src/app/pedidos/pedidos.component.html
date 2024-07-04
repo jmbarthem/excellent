@@ -1,0 +1,44 @@
+<div class="container mt-4">
+  <h2>Lista de Pedidos</h2>
+  <button class="btn btn-primary mb-3" (click)="openNewPedidoModal()">Novo Pedido</button>
+  <div *ngIf="alertMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ alertMessage }}
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeAlert()"></button>
+  </div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Total</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pedido of pedidos">
+        <td>{{ pedido.id }}</td>
+        <td>{{ pedido.cliente.razao_social }}</td>
+        <td>{{ pedido.total | currency }}</td>
+        <td>
+          <button class="btn btn-primary me-2" (click)="openEditPedidoModal(pedido)">Editar</button>
+          <button class="btn btn-danger" (click)="openDeleteModal(pedido, deleteModal)">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal de Exclusão -->
+<ng-template #deleteModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Confirmação de Exclusão</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    Tem certeza que deseja excluir o pedido ID {{ selectedPedido?.id }}?
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancelar</button>
+    <button type="button" class="btn btn-danger" (click)="deletePedido()">Excluir</button>
+  </div>
+</ng-template>

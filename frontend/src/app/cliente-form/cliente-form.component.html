@@ -1,0 +1,33 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ cliente ? 'Editar Cliente' : 'Adicionar Cliente' }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="cnpj" class="form-label">CNPJ:</label>
+      <input id="cnpj" class="form-control" formControlName="cnpj" (blur)="onCnpjBlur()">
+      <div *ngIf="clienteForm.get('cnpj')?.invalid && clienteForm.get('cnpj')?.touched" class="text-danger">
+        CNPJ é obrigatório e deve ter 14 dígitos.
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="razao_social" class="form-label">Razão Social:</label>
+      <input id="razao_social" class="form-control" formControlName="razao_social">
+      <div *ngIf="clienteForm.get('razao_social')?.invalid && clienteForm.get('razao_social')?.touched" class="text-danger">
+        Razão Social é obrigatória.
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">E-mail:</label>
+      <input id="email" class="form-control" formControlName="email">
+      <div *ngIf="clienteForm.get('email')?.invalid && clienteForm.get('email')?.touched" class="text-danger">
+        E-mail é obrigatório e deve ser válido.
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancelar</button>
+  <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="clienteForm.invalid">{{ cliente ? 'Salvar' : 'Adicionar' }}</button>
+</div>

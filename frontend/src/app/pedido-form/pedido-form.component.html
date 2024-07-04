@@ -1,0 +1,50 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ pedido ? 'Editar Pedido' : 'Novo Pedido' }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="pedidoForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="cliente_id" class="form-label">Cliente</label>
+      <select id="cliente_id" class="form-select" formControlName="cliente_id">
+        <option *ngFor="let cliente of clientes" [value]="cliente.id">{{ cliente.razao_social }}</option>
+      </select>
+      <div *ngIf="pedidoForm.get('cliente_id')?.invalid && pedidoForm.get('cliente_id')?.touched" class="text-danger">
+        Cliente é obrigatório.
+      </div>
+    </div>
+
+    <div formArrayName="produtos" *ngFor="let produtoCtrl of produtosArray.controls; let i = index">
+      <div [formGroupName]="i" class="mb-3">
+        <label for="produto_id" class="form-label">Produto</label>
+        <select id="produto_id" class="form-select" formControlName="id">
+          <option *ngFor="let produto of produtos" [value]="produto.id">{{ produto.descricao }}</option>
+        </select>
+        <div *ngIf="produtoCtrl.get('id')?.invalid && produtoCtrl.get('id')?.touched" class="text-danger">
+          Produto é obrigatório.
+        </div>
+
+        <label for="quantidade" class="form-label">Quantidade</label>
+        <input id="quantidade" type="number" class="form-control" formControlName="quantidade">
+        <div *ngIf="produtoCtrl.get('quantidade')?.invalid && produtoCtrl.get('quantidade')?.touched" class="text-danger">
+          Quantidade é obrigatória.
+        </div>
+
+        <label for="preco_unitario" class="form-label">Preço Unitário</label>
+        <input id="preco_unitario" type="number" class="form-control" formControlName="preco_unitario">
+        <div *ngIf="produtoCtrl.get('preco_unitario')?.invalid && produtoCtrl.get('preco_unitario')?.touched" class="text-danger">
+          Preço unitário é obrigatório.
+        </div>
+
+        <button type="button" class="btn btn-danger mt-2" (click)="removeProduto(i)">Remover</button>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-primary" (click)="addProduto()">Adicionar Produto</button>
+
+    <div class="modal-footer mt-4">
+      <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancelar</button>
+      <button type="submit" class="btn btn-primary">{{ pedido ? 'Atualizar' : 'Adicionar' }}</button>
+    </div>
+  </form>
+</div>
