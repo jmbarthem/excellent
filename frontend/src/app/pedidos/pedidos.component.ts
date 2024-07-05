@@ -58,6 +58,11 @@ export class PedidosComponent implements OnInit {
     );
   }
 
+  confirmDelete(modal: any): void {
+    this.deletePedido();
+    modal.close(); // Fecha o modal após confirmar a exclusão
+  }
+
   deletePedido(): void {
     if (this.selectedPedido) {
       this.apiService.deletePedido(this.selectedPedido.id).subscribe(
