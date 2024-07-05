@@ -30,14 +30,23 @@ export class PedidoFormComponent implements OnInit {
     this.loadProdutos();
 
     if (this.pedido) {
-      this.pedidoForm.patchValue(this.pedido);
-      this.pedido.produtos.forEach((produto: any) => {
-        this.produtosArray.push(this.createProdutoFormGroup(produto));
-      });
+        this.pedidoForm.patchValue({
+            cliente_id: this.pedido.cliente_id,
+            total: this.pedido.total,
+        });
+        this.pedido.produtos.forEach((produto: any) => {
+            this.produtosArray.push(this.createProdutoFormGroup({
+                produto_id: produto.pivot.produto_id,
+                quantidade: produto.pivot.quantidade,
+                valor_venda: produto.pivot.valor_venda,
+                subtotal: produto.pivot.subtotal
+            }));
+        });
     } else {
-      this.addProduto();
+        this.addProduto();
     }
-  }
+}
+
 
   loadClientes(): void {
     this.apiService.getClientes().subscribe((data: any[]) => {

@@ -75,34 +75,42 @@ class PedidoController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Log::info('Dados recebidos para atualização:', $request->all());
+
         $validatedData = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'produtos' => 'required|array',
-            'produtos.*.id' => 'required|exists:produtos,id',
+            'produtos.*.produto_id' => 'required|exists:produtos,id',
             'produtos.*.quantidade' => 'required|integer|min:1',
             'produtos.*.valor_venda' => 'required|numeric',
+            'produtos.*.subtotal' => 'required|numeric',
+            'total' => 'required|numeric|min:0',
         ]);
+
+        Log::info('Dados validados:', $validatedData);
 
         $pedido = Pedido::findOrFail($id);
 
-        $pedido->update(['cliente_id' => $validatedData['cliente_id']]);
+        // Atualiza os dados do pedido
+        $pedido->update([
+            'cliente_id' => $validatedData['cliente_id'],
+            'total' => $validatedData['total'],
+        ]);
 
+        // Remove produtos antigos e adiciona os novos
         $pedido->produtos()->detach();
 
-        $total = 0;
-        foreach ($validatedData['produtos'] as $produto) {
-            $total += $produto['valor_venda'] * $produto['quantidade'];
-            $pedido->produtos()->attach($produto['id'], [
-                'quantidade' => $produto['quantidade'],
-                'valor_venda' => $produto['valor_venda'],
-                'subtotal' => $produto['valor_venda'] * $produto['quantidade']
+        foreach ($validatedData['produtos'] as $produtoData) {
+            $pedido->produtos()->attach($produtoData['produto_id'], [
+                'quantidade' => $produtoData['quantidade'],
+                'valor_venda' => $produtoData['valor_venda'],
+                'subtotal' => $produtoData['subtotal'],
             ]);
         }
 
-        $pedido->update(['total' => $total]);
-
         return response()->json($pedido->load('cliente', 'produtos'), 200);
     }
+
 
     /**
      * Remove the specified resource from storage.

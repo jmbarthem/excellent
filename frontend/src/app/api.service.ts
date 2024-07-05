@@ -78,21 +78,20 @@ export class ApiService {
 
   updatePedido(id: number, pedido: any): Observable<any> {
     const pedidoData = {
-      cliente_id: pedido.cliente_id,
-      produtos: pedido.produtos.map((p: any) => ({
-        produto_id: p.id,
-        quantidade: p.quantidade,
-        valor_venda: p.preco_unitario,
-        subtotal: p.preco_unitario * p.quantidade
-      })),
-      total: pedido.produtos.reduce((sum: number, p: any) => sum + (p.preco_unitario * p.quantidade), 0)
+        cliente_id: pedido.cliente_id,
+        produtos: pedido.produtos.map((p: any) => ({
+            produto_id: p.produto_id || p.id,
+            quantidade: p.quantidade,
+            valor_venda: p.valor_venda || p.preco_unitario,
+            subtotal: (p.valor_venda || p.preco_unitario) * p.quantidade
+        })),
+        total: pedido.produtos.reduce((sum: number, p: any) => sum + ((p.valor_venda || p.preco_unitario) * p.quantidade), 0)
     };
 
     return this.http.put(`${this.apiUrl}/pedidos/${id}`, pedidoData, {
-      headers: new HttpHeaders().set('Content-Type', 'application/json')
+        headers: new HttpHeaders().set('Content-Type', 'application/json')
     });
   }
-
 
   deletePedido(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/pedidos/${id}`);
