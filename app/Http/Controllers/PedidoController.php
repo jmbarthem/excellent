@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Pedido;
 use App\Models\Produto;
 use App\Models\Cliente;
+use Illuminate\Support\Facades\Log;
 
 class PedidoController extends Controller
 {
@@ -22,30 +23,43 @@ class PedidoController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'cliente_id' => 'required|exists:clientes,id',
-            'produtos' => 'required|array',
-            'produtos.*.id' => 'required|exists:produtos,id',
-            'produtos.*.quantidade' => 'required|integer|min:1',
-            'produtos.*.valor_venda' => 'required|numeric'
-        ]);
+        Log::info('Dados recebidos para inserção:', $request->all());
 
-        $pedido = Pedido::create([
-            'cliente_id' => $validatedData['cliente_id'],
-            'total' => collect($validatedData['produtos'])->sum(function ($produto) {
-                return $produto['valor_venda'] * $produto['quantidade'];
-            })
-        ]);
-
-        foreach ($validatedData['produtos'] as $produto) {
-            $pedido->produtos()->attach($produto['id'], [
-                'quantidade' => $produto['quantidade'],
-                'valor_venda' => $produto['valor_venda'],
-                'subtotal' => $produto['valor_venda'] * $produto['quantidade']
+        try {
+            $validatedData = $request->validate([
+                'cliente_id' => 'required|exists:clientes,id',
+                'produtos' => 'required|array',
+                'produtos.*.produto_id' => 'required|exists:produtos,id',
+                'produtos.*.quantidade' => 'required|integer|min:1',
+                'produtos.*.valor_venda' => 'required|numeric|min:0',
+                'produtos.*.subtotal' => 'required|numeric|min:0',
+                'total' => 'required|numeric|min:0',
             ]);
-        }
 
-        return response()->json($pedido->load('cliente', 'produtos'), 201);
+            Log::info('Dados validados:', $validatedData);
+
+            $pedido = Pedido::create([
+                'cliente_id' => $validatedData['cliente_id'],
+                'total' => $validatedData['total'],
+            ]);
+
+            foreach ($validatedData['produtos'] as $produtoData) {
+                $pedido->produtos()->attach($produtoData['produto_id'], [
+                    'quantidade' => $produtoData['quantidade'],
+                    'valor_venda' => $produtoData['valor_venda'],
+                    'subtotal' => $produtoData['subtotal'],
+                ]);
+            }
+
+            return response()->json($pedido->load('produtos'), 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Erro de validação:', $e->errors());
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            Log::error('Erro ao criar pedido:', ['message' => $e->getMessage()]);
+            return response()->json(['message' => 'Erro ao criar pedido'], 500);
+        }
     }
 
     /**

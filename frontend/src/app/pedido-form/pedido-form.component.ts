@@ -57,11 +57,13 @@ export class PedidoFormComponent implements OnInit {
 
   createProdutoFormGroup(produto: any = {}): FormGroup {
     return this.fb.group({
-      id: [produto.id || '', Validators.required],
+      produto_id: [produto.produto_id || produto.id || '', Validators.required],
       quantidade: [produto.quantidade || '', Validators.required],
-      preco_unitario: [produto.preco_unitario || '', Validators.required]
+      valor_venda: [produto.valor_venda || produto.preco_unitario || '', Validators.required],
+      subtotal: [{ value: produto.subtotal || 0, disabled: true }]
     });
   }
+
 
   addProduto(): void {
     this.produtosArray.push(this.createProdutoFormGroup());
@@ -73,8 +75,19 @@ export class PedidoFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.pedidoForm.valid) {
+      const pedidoData = {
+        cliente_id: this.pedidoForm.get('cliente_id')!.value,
+        produtos: this.pedidoForm.get('produtos')!.value.map((p: any) => ({
+          produto_id: p.produto_id,
+          quantidade: p.quantidade,
+          valor_venda: p.valor_venda,
+          subtotal: p.valor_venda * p.quantidade,
+        })),
+        total: this.pedidoForm.get('produtos')!.value.reduce((sum: number, p: any) => sum + (p.valor_venda * p.quantidade), 0),
+      };
+
       if (this.pedido) {
-        this.apiService.updatePedido(this.pedido.id, this.pedidoForm.value).subscribe(
+        this.apiService.updatePedido(this.pedido.id, pedidoData).subscribe(
           (response) => {
             console.log('Pedido atualizado com sucesso', response);
             this.activeModal.close('save');
@@ -84,7 +97,7 @@ export class PedidoFormComponent implements OnInit {
           }
         );
       } else {
-        this.apiService.addPedido(this.pedidoForm.value).subscribe(
+        this.apiService.addPedido(pedidoData).subscribe(
           (response) => {
             console.log('Pedido salvo com sucesso', response);
             this.activeModal.close('save');
@@ -96,4 +109,5 @@ export class PedidoFormComponent implements OnInit {
       }
     }
   }
+
 }
