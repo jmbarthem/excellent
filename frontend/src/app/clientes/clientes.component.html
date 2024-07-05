@@ -22,7 +22,7 @@
         <tr *ngFor="let cliente of clientes">
           <td>{{ cliente.id }}</td>
           <td>{{ cliente.razao_social }}</td>
-          <td>{{ cliente.cnpj }}</td>
+          <td>{{ cliente.cnpj | cnpj }}</td>
           <td>{{ cliente.email }}</td>
           <td>
             <button class="btn btn-primary me-2" (click)="openEditClienteModal(cliente)">Editar</button>

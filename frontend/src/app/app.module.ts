@@ -9,6 +9,7 @@ import { CurrencyPipe } from '@angular/common';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { LOCALE_ID } from '@angular/core';
+import { CnpjPipe } from './pipes/cnpj.pipe';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -35,7 +36,8 @@ const routes: Routes = [
     ProdutosComponent,
     PedidosComponent,
     ProdutoFormComponent,
-    PedidoFormComponent
+    PedidoFormComponent,
+    CnpjPipe
   ],
   imports: [
     BrowserModule,
