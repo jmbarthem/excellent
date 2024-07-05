@@ -45,20 +45,17 @@ export class ApiService {
     return this.http.get(`${this.apiUrl}/produtos/${id}`);
   }
 
-  addProduto(produto: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/produtos`, produto);
+  addProduto(produto: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/produtos`, produto, {
+      headers: new HttpHeaders().set('Accept', 'application/json')
+    });
   }
 
-  updateProduto(id: number, produto: any): Observable<any> {
-    const params = new HttpParams()
-        .set('descricao', produto.descricao)
-        .set('valor_venda', produto.valor_venda)
-        .set('estoque', produto.estoque);
-
-    return this.http.put(`${this.apiUrl}/produtos/${id}`, params.toString(), {
-        headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+  updateProduto(id: number, produto: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/produtos/${id}?_method=PUT`, produto, {
+      headers: new HttpHeaders().set('Accept', 'application/json')
     });
-}
+  }
 
   deleteProduto(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/produtos/${id}`);
