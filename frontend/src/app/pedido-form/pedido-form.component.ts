@@ -45,8 +45,9 @@ export class PedidoFormComponent implements OnInit {
     } else {
         this.addProduto();
     }
-}
-
+    console.log('Formulário inicializado:', this.pedidoForm.value);
+    console.log('Produtos carregados no ngOnInit:', this.produtos);
+  }
 
   loadClientes(): void {
     this.apiService.getClientes().subscribe((data: any[]) => {
@@ -56,7 +57,8 @@ export class PedidoFormComponent implements OnInit {
 
   loadProdutos(): void {
     this.apiService.getProdutos().subscribe((data: any[]) => {
-      this.produtos = data;
+        this.produtos = data;
+        console.log('Produtos carregados:', this.produtos);  // Log da lista de produtos carregados
     });
   }
 
@@ -66,13 +68,12 @@ export class PedidoFormComponent implements OnInit {
 
   createProdutoFormGroup(produto: any = {}): FormGroup {
     return this.fb.group({
-      produto_id: [produto.produto_id || produto.id || '', Validators.required],
-      quantidade: [produto.quantidade || '', Validators.required],
-      valor_venda: [produto.valor_venda || produto.preco_unitario || '', Validators.required],
-      subtotal: [{ value: produto.subtotal || 0, disabled: true }]
+        produto_id: [produto.produto_id || produto.id || '', Validators.required],
+        quantidade: [produto.quantidade || '', Validators.required],
+        valor_venda: [produto.valor_venda || produto.preco_unitario || '', Validators.required],
+        subtotal: [{ value: produto.subtotal || 0, disabled: true }]
     });
   }
-
 
   addProduto(): void {
     this.produtosArray.push(this.createProdutoFormGroup());
@@ -80,6 +81,21 @@ export class PedidoFormComponent implements OnInit {
 
   removeProduto(index: number): void {
     this.produtosArray.removeAt(index);
+  }
+
+  onProdutoChange(index: number): void {
+    const produtoCtrl = this.produtosArray.at(index);
+    const produtoId = Number(produtoCtrl.get('produto_id')?.value);  // Garantir que o ID é um número
+    console.log(`Produto selecionado no índice ${index}:`, produtoId);
+
+    const selectedProduto = this.produtos.find(p => p.id === produtoId);
+    if (selectedProduto) {
+        console.log(`Produto encontrado:`, selectedProduto);
+        produtoCtrl.patchValue({ valor_venda: selectedProduto.valor_venda });
+        console.log(`Valor de venda atualizado:`, produtoCtrl.get('valor_venda')?.value);
+    } else {
+        console.log(`Produto não encontrado para o ID:`, produtoId);
+    }
   }
 
   onSubmit(): void {
@@ -118,5 +134,4 @@ export class PedidoFormComponent implements OnInit {
       }
     }
   }
-
 }
